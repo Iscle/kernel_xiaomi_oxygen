@@ -1,0 +1,42 @@
+/*
+ * Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+&soc {
+	qcom,msm-dai-mi2s {
+		dai_mi2s5: qcom,msm-dai-q6-mi2s-quin {
+			qcom,msm-mi2s-rx-lines = <0xc>;
+			qcom,msm-mi2s-tx-lines = <3>;
+		};
+	};
+
+	int_codec: sound {
+		qcom,msm-ext-pa = "quinary";
+
+		qcom,audio-routing =
+			"RX_BIAS", "MCLK",
+			"SPK_RX_BIAS", "MCLK",
+			"INT_LDO_H", "MCLK",
+			"MIC BIAS External", "Handset Mic",
+			"MIC BIAS External2", "Headset Mic",
+			"MIC BIAS External", "Secondary Mic",
+			"AMIC1", "MIC BIAS External",
+			"AMIC2", "MIC BIAS External2",
+			"AMIC3", "MIC BIAS External";
+
+		/delete-property/ qcom,hdmi-dba-codec-rx;
+
+		qcom,msm-gpios =
+			"pri_i2s",
+			"quin_i2s";
+	};
+};
