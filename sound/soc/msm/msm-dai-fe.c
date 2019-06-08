@@ -2707,6 +2707,7 @@ static struct snd_soc_dai_driver msm_fe_dais[] = {
 		.name = "MultiMedia29",
 		.probe = fe_dai_probe,
 	},
+	{
                 .capture = {
 			.stream_name = "QUIN MI2S_TX Hostless Capture",
 			.aif_name = "QUIN_MI2S_UL_HL",
