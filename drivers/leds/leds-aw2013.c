@@ -21,6 +21,7 @@
 #include <linux/slab.h>
 #include <linux/regulator/consumer.h>
 #include <linux/leds-aw2013.h>
+#include <asm/bootinfo.h>
 
 /* register address */
 #define AW_REG_RESET			0x00
@@ -441,6 +442,14 @@ static int aw2013_led_parse_child_node(struct aw2013_led *led_array,
 			dev_err(&led->client->dev,
 				"Failure reading led name, rc = %d\n", rc);
 			goto free_pdata;
+		}
+
+		// button-backlight is only driven by aw2013 on Oxygen hardware version P3C
+		if (get_hw_version() != 0x180 && strcmp(led->cdev.name, "button-backlight") == 0) {
+			dev_err(&led->client->dev,
+				"button-backlight is not driven by aw2013 in this hardware version\n");
+			devm_kfree(&led->client->dev, led_array[parsed_leds].pdata);
+			continue;
 		}
 
 		rc = of_property_read_u32(temp, "aw2013,id",

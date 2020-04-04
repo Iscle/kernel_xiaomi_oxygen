@@ -26,6 +26,7 @@
 #include <linux/delay.h>
 #include <linux/regulator/consumer.h>
 #include <linux/delay.h>
+#include <asm/bootinfo.h>
 
 #define WLED_MOD_EN_REG(base, n)	(base + 0x60 + n*0x10)
 #define WLED_IDAC_DLY_REG(base, n)	(WLED_MOD_EN_REG(base, n) + 0x01)
@@ -3906,6 +3907,13 @@ static int qpnp_leds_probe(struct spmi_device *spmi)
 			dev_err(&led->spmi_dev->dev,
 				"Failure reading led name, rc = %d\n", rc);
 			goto fail_id_check;
+		}
+
+		// button-backlight is driven by aw2013 on Oxygen hardware version P3C
+		if (get_hw_version() == 0x180 && strcmp(led->cdev.name, "button-backlight") == 0) {
+			dev_err(&led->spmi_dev->dev,
+				"button-backlight is not driven by mpp in this hardware version\n");
+			continue;
 		}
 
 		rc = of_property_read_u32(temp, "qcom,max-current",
