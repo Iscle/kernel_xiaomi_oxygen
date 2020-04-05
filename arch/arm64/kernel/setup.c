@@ -62,6 +62,7 @@
 #include <asm/psci.h>
 #include <asm/efi.h>
 #include <asm/system_misc.h>
+#include <asm/bootinfo.h>
 
 unsigned int boot_reason;
 EXPORT_SYMBOL(boot_reason);
@@ -94,6 +95,14 @@ static struct resource mem_res[] = {
 
 #define kernel_code mem_res[0]
 #define kernel_data mem_res[1]
+
+#ifdef CONFIG_OF_FLATTREE
+void __init early_init_dt_setup_hwversion_arch(unsigned long hw_version)
+{
+	pr_info("HW version=0x%x\n", hw_version);
+	set_hw_version(hw_version);
+}
+#endif
 
 void __init early_print(const char *str, ...)
 {
