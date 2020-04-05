@@ -42,7 +42,6 @@
 #include <linux/platform_device.h>
 #include <linux/input/synaptics_dsx_force.h>
 #include "synaptics_dsx_core.h"
-#include <linux/hwinfo.h>
 
 #define FW_IHEX_NAME "synaptics/startup_fw_update.bin"
 #define FW_IMAGE_NAME "synaptics/startup_fw_update.img"
@@ -2192,7 +2191,6 @@ static int fwu_read_f34_v5v6_queries(void)
 static int fwu_read_f34_queries(void)
 {
 	int retval;
-	struct synaptics_rmi4_data *rmi4_data = fwu->rmi4_data;
 
 	memset(&fwu->blkcount, 0x00, sizeof(fwu->blkcount));
 	memset(&fwu->phyaddr, 0x00, sizeof(fwu->phyaddr));
@@ -2202,7 +2200,6 @@ static int fwu_read_f34_queries(void)
 	else
 		retval = fwu_read_f34_v5v6_queries();
 
-	update_hardware_info(TYPE_TP_MAKER, rmi4_data->lockdown_info[0] - 0x30);
 	return retval;
 }
 
