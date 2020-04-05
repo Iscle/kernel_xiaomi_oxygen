@@ -97,7 +97,7 @@ static struct resource mem_res[] = {
 #define kernel_data mem_res[1]
 
 #ifdef CONFIG_OF_FLATTREE
-void __init early_init_dt_setup_hwversion_arch(unsigned long hw_version)
+void __init early_init_dt_setup_hwversion_arch(unsigned int hw_version)
 {
 	pr_info("HW version=0x%x\n", hw_version);
 	set_hw_version(hw_version);
