@@ -32,6 +32,7 @@
 #include "../codecs/msm8x16-wcd.h"
 #include "../codecs/wsa881x-analog.h"
 #include <linux/regulator/consumer.h>
+#include <asm/bootinfo.h>
 #define DRV_NAME "msm8952-asoc-wcd"
 
 #define BTSCO_RATE_8KHZ 8000
@@ -1601,6 +1602,7 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	void *msm8952_wcd_cal;
 	struct wcd_mbhc_btn_detect_cfg *btn_cfg;
 	u16 *btn_low, *btn_high;
+	unsigned int hw_version;
 
 	msm8952_wcd_cal = kzalloc(WCD_MBHC_CAL_SIZE(WCD_MBHC_DEF_BUTTONS,
 				WCD_MBHC_DEF_RLOADS), GFP_KERNEL);
@@ -1641,6 +1643,15 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	btn_high[3] = 450;
 	btn_low[4] = 500;
 	btn_high[4] = 500;
+
+	/* A 200ohm resistor is connected on headset mic pin on D4 P3,
+	   for fixing the noise issue introduced by NFC P2. So need
+	   re-calculate the button threshold */
+	hw_version = get_hw_version();
+	if (hw_version >= 0x160 && hw_version <= 0x180) {
+		btn_high[0] = 200;
+		btn_high[1] = 380;
+	}
 
 	return msm8952_wcd_cal;
 }
