@@ -1,0 +1,110 @@
+/*
+ * Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include "../msm8953-audio.dtsi"
+
+&int_codec {
+	/delete-property/ qcom,cdc-us-euro-gpios;
+	qcom,msm-mbhc-hphl-swh = <1>;
+	qcom,msm-mbhc-gnd-swh = <1>;
+	qcom,msm-hs-micbias-type = "external";
+
+	qcom,msm-gpios =
+		"pri_i2s",
+		"quin_i2s",
+		"comp_gpio";
+	qcom,pinctrl-names =
+		"all_off",
+		"pri_i2s_act",
+		"quin_act",
+		"quin_pri_i2s_act",
+		"comp_gpio_act",
+		"comp_gpio_pri_i2s_act",
+		"comp_gpio_quin_act",
+		"comp_gpio_quin_pri_i2s_act";
+
+	pinctrl-names =
+		"all_off",
+		"pri_i2s_act",
+		"quin_act",
+		"quin_pri_i2s_act",
+		"comp_gpio_act",
+		"comp_gpio_pri_i2s_act",
+		"comp_gpio_quin_act",
+		"comp_gpio_quin_pri_i2s_act";
+
+	pinctrl-3 = <&cdc_pdm_lines_act &cdc_pdm_comp_lines_sus
+		&cdc_pdm_lines_2_act &cross_conn_det_sus
+		&pri_tlmm_lines_act &pri_tlmm_ws_act>;
+	pinctrl-4 = <&cdc_pdm_lines_sus &cdc_pdm_comp_lines_act
+		&cdc_pdm_lines_2_sus &cross_conn_det_sus
+		&pri_tlmm_lines_sus &pri_tlmm_ws_sus>;
+	pinctrl-5 = <&cdc_pdm_lines_act &cdc_pdm_comp_lines_act
+		&cdc_pdm_lines_2_act &cross_conn_det_sus
+		&pri_tlmm_lines_sus &pri_tlmm_ws_sus>;
+	pinctrl-6 = <&cdc_pdm_lines_sus &cdc_pdm_comp_lines_act
+		&cdc_pdm_lines_2_sus &cross_conn_det_sus
+		&pri_tlmm_lines_act &pri_tlmm_ws_act>;
+	pinctrl-7 = <&cdc_pdm_lines_act &cdc_pdm_comp_lines_act
+		&cdc_pdm_lines_2_act &cross_conn_det_sus
+		&pri_tlmm_lines_act &pri_tlmm_ws_act>;
+	/delete-property/ pinctrl-8;
+	/delete-property/ pinctrl-9;
+	/delete-property/ pinctrl-10;
+	/delete-property/ pinctrl-11;
+	/delete-property/ pinctrl-12;
+	/delete-property/ pinctrl-13;
+	/delete-property/ pinctrl-14;
+	/delete-property/ pinctrl-15;
+
+	asoc-codec = <&stub_codec>, <&pm8953_diangu_dig>;
+	asoc-codec-names = "msm-stub-codec.1", "cajon_codec";
+	
+	/delete-property/ asoc-wsa-codec-names;
+	/delete-property/ asoc-wsa-codec-prefixes;
+
+	/delete-property/ msm-vdd-wsa-switch-supply;
+	/delete-property/ qcom,msm-vdd-wsa-switch-voltage;
+	/delete-property/ qcom,msm-vdd-wsa-switch-current;
+};
+
+&wcd9335 {
+	clock-names = "wcd_clk";
+	clocks = <&clock_audio clk_audio_pmi_clk>;
+
+	/delete-property/ qcom,cdc-reset-gpio;
+
+	/delete-property/ cdc-vdd-buck-supply;
+	/delete-property/ qcom,cdc-vdd-buck-voltage;
+	/delete-property/ qcom,cdc-vdd-buck-current;
+
+	/delete-property/ cdc-buck-sido-supply;
+	/delete-property/ qcom,cdc-buck-sido-voltage;
+	/delete-property/ qcom,cdc-buck-sido-current;
+
+	/delete-property/ cdc-vdd-tx-h-supply;
+	/delete-property/ qcom,cdc-vdd-tx-h-voltage;
+	/delete-property/ qcom,cdc-vdd-tx-h-current;
+
+	/delete-property/ cdc-vdd-rx-h-supply;
+	/delete-property/ qcom,cdc-vdd-rx-h-voltage;
+	/delete-property/ qcom,cdc-vdd-rx-h-current;
+
+	/delete-property/ cdc-vdd-px-supply;
+	/delete-property/ qcom,cdc-vdd-px-voltage;
+	/delete-property/ qcom,cdc-vdd-px-current;
+
+	/delete-property/ cdc-vdd-mic-bias-supply;
+	/delete-property/ qcom,cdc-vdd-mic-bias-voltage;
+	/delete-property/ qcom,cdc-vdd-mic-bias-current;
+};
