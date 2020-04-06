@@ -40,7 +40,6 @@
 #include <linux/input/mt.h>
 #include <linux/uaccess.h>
 #include <linux/proc_fs.h>
-#include <linux/hwinfo.h>
 #ifdef CONFIG_FB
 #include <linux/notifier.h>
 #include <linux/fb.h>
