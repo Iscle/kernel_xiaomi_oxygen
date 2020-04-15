@@ -11,10 +11,7 @@
  * GNU General Public License for more details.
  */
 
-#include "../msm-pm8953.dtsi"
-
 &spmi_bus {
-
 	qcom,pm8953@0 {
 		qcom,power-on@800 {
 			qcom,pon_1 {
@@ -22,6 +19,13 @@
 				qcom,s1-timer = <4480>;
 				qcom,s2-timer = <2000>;
 				qcom,s2-type = <7>;
+			};
+		};
+
+		pm8953_gpios: gpios {
+			gpio@c700 {
+				qcom,vin-sel = <1>;
+				status = "okay";
 			};
 		};
 	};

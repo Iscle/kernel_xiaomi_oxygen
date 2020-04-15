@@ -11,13 +11,10 @@
  * GNU General Public License for more details.
  */
 
-#include "../msm-audio.dtsi"
-
 &soc {
-
 	qcom,msm-dai-mi2s {
 		dai_mi2s5: qcom,msm-dai-q6-mi2s-quin {
-			qcom,msm-mi2s-rx-lines = <12>;
+			qcom,msm-mi2s-rx-lines = <0xc>;
 			qcom,msm-mi2s-tx-lines = <3>;
 		};
 	};

@@ -13,11 +13,11 @@
 
 /dts-v1/;
 
-#include "oxygen/msm8953-oxygen.dtsi"
-#include "oxygen/msm-pmi8950-oxygen.dtsi"
-#include "oxygen/msm8953-mtp-oxygen.dtsi"
+#include "msm8953.dtsi"
+#include "msm-pmi8950.dtsi"
+#include "msm8953-mtp.dtsi"
 #include "msm8953-pmi8950.dtsi"
-#include "oxygen/msm8953-camera-sensor-mtp-oxygen.dtsi"
+#include "msm8953-camera-sensor-mtp.dtsi"
 
 / {
 	model = "Qualcomm Technologies, Inc. MSM8953 + PMI8950 MTP";
@@ -29,13 +29,22 @@
 /{
 	mtp_batterydata: qcom,battery-data {
 		qcom,batt-id-range-pct = <15>;
-		#include "oxygen/batterydata-d4-sunwoda-5300mAh.dtsi"
 		#include "oxygen/batterydata-d4-coslight-5300mAh.dtsi"
+		#include "oxygen/batterydata-d4-sunwoda-5300mAh.dtsi"
 	};
 };
 
 &pmi8950_fg {
 	qcom,battery-data = <&mtp_batterydata>;
+	qcom,resume-soc-raw = <253>;
+	qcom,fg-cutoff-voltage-mv = <3400>;
+	qcom,thermal-coefficients = [DA 86 F0 50 08 3C];
+	qcom,vbat-estimate-diff-mv = <200>;
+	qcom,warm-bat-decidegc = <450>;
+	qcom,cool-bat-decidegc = <150>;
+	qcom,hot-bat-decidegc  = <600>;
+	qcom,cold-bat-decidegc = <0>;
+	qcom,ext-sense-type;
 };
 
 &pmi8950_charger {
@@ -44,4 +53,18 @@
 	qcom,chg-led-support;
 	qcom,external-typec;
 	qcom,typec-psy-name = "typec";
+	qcom,fastchg-current-ma = <3400>;
+	qcom,float-voltage-mv = <4400>;
+	qcom,thermal-mitigation = <2500 2000 1500 1000>;
+	qcom,thermal-mitigation-screen-off = <3000 2800 2500 2000 1600 1200 1000 500>;
+	qcom,thermal-mitigation-screen-on = <2000 1400 1100 900 700 650 600 500>;
+	qcom,thermal-mitigation-hvdcp-screen-off = <1800 1600 1400 1200 1000 900 700 500>;
+	qcom,thermal-mitigation-hvdcp-screen-on = <1200 900 700 600 550 500 500 500>;
+	qcom,thermal-fcc-screen-off = <3400 3200 2800 2400 1600 1200 1000 500>;
+	qcom,thermal-fcc-screen-on = <1800 1100 1000 900 700 500 300 500>;
+	qcom,fastchg-current-comp = <1200>;
+	qcom,float-voltage-comp = <16>;
+	qcom,override-usb-current;
 };
+
+#include "oxygen/msm8953-mtp-oxygen.dtsi"

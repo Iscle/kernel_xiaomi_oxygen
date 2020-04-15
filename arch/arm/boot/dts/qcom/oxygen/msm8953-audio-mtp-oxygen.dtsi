@@ -11,8 +11,6 @@
  * GNU General Public License for more details.
  */
 
-#include "../msm8953-audio-mtp.dtsi"
-
 &int_codec {
 	qcom,msm-hs-micbias-type = "external";
 };

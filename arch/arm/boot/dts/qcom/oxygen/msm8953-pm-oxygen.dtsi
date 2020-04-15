@@ -10,10 +10,7 @@
  * GNU General Public License for more details.
  */
 
-#include "../msm8953-pm.dtsi"
-
 &soc {
-
 	qcom,mpm@601d4 {
 		qcom,gic-map = <2 216>, /* tsens_upper_lower_int */
 			<58 168>,   /* qusb2phy_dmse_hv -> hs_phy_irq*/

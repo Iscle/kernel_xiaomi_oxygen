@@ -10,20 +10,44 @@
  * GNU General Public License for more details.
  */
 
-#include "../msm-pmi8950.dtsi"
-
 &spmi_bus {
-
 	qcom,pmi8950@2 {
+		pmi8950_gpios: gpios {
+			spmi-dev-container;
+			compatible = "qcom,qpnp-pin";
+			gpio-controller;
+			#gpio-cells = <2>;
+			#address-cells = <1>;
+			#size-cells = <1>;
+			label = "pmi8950-gpio";
+
+			gpio@c000 {
+				reg = <0xc000 0x100>;
+				qcom,pin-num = <1>;
+				status = "disabled";
+			};
+
+			gpio@c100 {
+				qcom,mode = <1>;	/* Digital output */
+				qcom,output-type = <0>;	/* CMOS */
+				qcom,pull = <5>;	/* No pull */
+				qcom,vin-sel = <0>;	/* VIN0 */
+				qcom,src-sel = <0>;	/* Constant */
+				qcom,invert = <0>;	/* Output low initially */
+				qcom,master-en = <1>;	/* GPIO enabled */
+				status = "okay";
+			};
+		};
+
 		pmi8950_mpps: mpps {
 			mpp@a100 {
 				status = "okay";
 			};
 		};
 
-/*		pmi8950_charger: qcom,qpnp-smbcharger {
-			/remove-property/ qcom,autoadjust-vfloat;
-		};*/
+		pmi8950_charger: qcom,qpnp-smbcharger {
+			/delete-property/ qcom,autoadjust-vfloat;
+		};
 
 		qcom,leds@a100 {
 			qcom,led_mpp_2 {

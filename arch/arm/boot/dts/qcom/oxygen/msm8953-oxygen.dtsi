@@ -11,22 +11,13 @@
  * GNU General Public License for more details.
  */
 
-#include "../msm8953.dtsi"
-
 / {
-
 	firmware: firmware {
 		android {
-			compatible = "android,firmware";
 			fstab {
-				compatible = "android,fstab";
 				vendor {
-					compatible = "android,vendor";
 					dev = "/dev/block/platform/soc/7824900.sdhci/by-name/cust";
-					type = "ext4";
-					mnt_flags = "ro,barrier=1,discard";
 					fsmgr_flags = "wait";
-					status = "ok";
 				};
 				system {
 					compatible = "android,system";
@@ -60,6 +51,10 @@
 };
 
 &soc {
+	spi_3: spi@78b7000 {
+		status = "disabled";
+	};
+
 	spi_8: spi@7af8000 { /* BLSP2 QUP4 */
 		compatible = "qcom,spi-qup-v2";
 		#address-cells = <1>;
@@ -83,22 +78,182 @@
 		qcom,bam-consumer-pipe-index = <10>;
 		qcom,bam-producer-pipe-index = <11>;
 		qcom,master-id = <84>;
+		status = "ok";
+
+		peel_ir@0 {
+			compatible = "peel_ir";
+			reg = <0x0>;
+			spi-max-frequency = <19200000>;
+			peel_ir,lr-gpio = <73>;
+			peel_ir,lr-gpio-valid = <0>;
+			peel_ir,spi-bpw = <32>;
+			peel_ir,spi-clk-speed = <960000>;
+			peel_ir,spi-mode = <0>;
+			peel_ir,peel-field = <2345>;
+			status = "disabled";
+		};
+
+		irled@0 {
+			compatible = "ir-spi";
+			reg = <0x1>;
+			status = "ok";
+			spi-max-frequency = <1000000>;
+		};
 	};
 
 	i2c_2: i2c@78b6000 {
 		/delete-node/ adv7533@39;
+
+		tas2560@4e {
+			compatible = "ti,tas2560s";
+			reg = <0x4e>;
+			ti,cdc-left-reset-gpio = <&tlmm 127 0>;
+			ti,cdc-right-reset-gpio = <&tlmm 20 0>;
+			ti,cdc-left-irq-gpio = <&tlmm 63 0>;
+			ti,cdc-right-irq-gpio = <&tlmm 21 0>;
+			ti,left-channel = <0x4f>;
+			ti,right-channel = <0x4c>;
+			ti,left-load = <0>;   /* 0, 8Ohm; 1, 6Ohm; 2, 4Ohm */
+			ti,right-load-aac = <0>;   /* 0, 8Ohm; 1, 6Ohm; 2, 4Ohm */
+			ti,right-load-ssi = <0>;   /* 0, 8Ohm; 1, 6Ohm; 2, 4Ohm */
+			ti,spk-id-pin = <&spk_id_pin>;
+
+		};
+
+		aw2013@45 {
+			compatible = "awinic,aw2013";
+			reg = <0x45>;
+			vdd-supply = <&pm8953_l10>;
+			vcc-supply = <&pm8953_l5>;
+
+			aw2013,white {
+				aw2013,name = "white";
+				aw2013,id = <0>;
+				aw2013,max-brightness = <255>;
+				aw2013,max-current = <1>;
+				aw2013,rise-time-ms = <3>;
+				aw2013,hold-time-ms = <2>;
+				aw2013,fall-time-ms = <3>;
+				aw2013,off-time-ms = <2>;
+			};
+
+			aw2013,button-backlight {
+				aw2013,name = "button-backlight";
+				aw2013,id = <1>;
+				aw2013,max-brightness = <255>;
+				aw2013,max-current = <1>;
+				aw2013,rise-time-ms = <3>;
+				aw2013,hold-time-ms = <2>;
+				aw2013,fall-time-ms = <3>;
+				aw2013,off-time-ms = <2>;
+			};
+		};
+
+		smb1351-charger@1d {
+			compatible = "qcom,smb1351-charger";
+			reg = <0x1d>;
+			qcom,parallel-charger;
+			qcom,float-voltage-mv = <4400>;
+			qcom,recharge-mv = <100>;
+			qcom,parallel-chg-en = <&pmi8950_gpios 2 0>;
+		};
+	};
+
+	i2c_3: i2c@78b7000 {
+		status = "okay";
+		ft5x46_i2c@38 {
+			compatible = "ft,ft5x46_i2c";
+			reg = <0x38>;
+			interrupt-parent = <&tlmm>;
+			interrupts = <65 0x2008>;
+			vddio-supply = <&tp1v8_vreg>;
+			vdd-supply = <&tp2v8_vreg>;
+			/* pins used by touchscreen */
+			pinctrl-names = "pmx_ts_active","pmx_ts_suspend";
+			pinctrl-0 = <&ts_int_active &ts_reset_active>;
+			pinctrl-1 = <&ts_int_suspend &ts_reset_suspend>;
+			ft5x46_i2c,i2c-pull-up;
+			ft5x46_i2c,irqflags = <0x2008>;
+			ft5x46_i2c,x-max = <1080>;
+			ft5x46_i2c,y-max = <1920>;
+			ft5x46_i2c,z-max = <255>;
+			ft5x46_i2c,w-max = <200>;
+			ft5x46_i2c,reset-gpio = <&tlmm 64 0x00>;
+			ft5x46_i2c,irq-gpio = <&tlmm 65 0x2008>;
+			ft5x46_i2c,landing-jiffies = <1000>;
+			ft5x46_i2c,landing-threshold = <16>;
+			ft5x46_i2c,staying-threshold = <8>;
+			ft5x46_i2c,raw-min = <7000>;
+			ft5x46_i2c,raw-max = <10000>;
+			ft5x46_i2c,has-key;
+			ft5x46_i2c,key-rx1 = <4>;
+			ft5x46_i2c,key-rx2 = <8>;
+			ft5x46_i2c,key-rx3 = <12>;
+			ft5x46_i2c,open-min = <4000>;
+			ft5x46_i2c,imin-cc = <500>;
+			ft5x46_i2c,imin-cg = <500>;
+			ft5x46_i2c,fw-delay-55-ms = <2>;
+			ft5x46_i2c,fw-delay-aa-ms = <2>;
+			ft5x46_i2c,fw-upgrade-id1 = <0x54>;
+			ft5x46_i2c,fw-upgrade-id2 = <0x2C>;
+			ft5x46_i2c,fw-delay-readid-ms = <20>;
+			ft5x46_i2c,firmware-array-size = <3>;
+			ft5x46_i2c,cfg_0 {
+				ft5x46_i2c,chip = <0x54>;
+				ft5x46_i2c,vendor = <0x3b>;
+				ft5x46_i2c,lcd-vendor = <0x36>;
+				ft5x46_i2c,fw-name = "ft5446_biel.fw";
+				ft5x46_i2c,tx-num = <24>;
+				ft5x46_i2c,rx-num = <13>;
+			};
+			ft5x46_i2c,cfg_1 {
+				ft5x46_i2c,chip = <0x54>;
+				ft5x46_i2c,vendor = <0x51>;
+				ft5x46_i2c,lcd-vendor = <0x36>;
+				ft5x46_i2c,fw-name = "ft5446_ofilm.fw";
+				ft5x46_i2c,tx-num = <24>;
+				ft5x46_i2c,rx-num = <13>;
+			};
+			ft5x46_i2c,cfg_2 {
+				ft5x46_i2c,chip = <0x54>;
+				ft5x46_i2c,vendor = <0x3b>;
+				ft5x46_i2c,lcd-vendor = <0x34>;
+				ft5x46_i2c,fw-name = "ft5446_biel_auo.fw";
+				ft5x46_i2c,tx-num = <24>;
+				ft5x46_i2c,rx-num = <13>;
+			};
+		};
+	};
+
+	i2c_5: i2c@7af5000 {
+		nq@28 {
+			compatible = "qcom,nq-nci";
+			reg = <0x28>;
+			qcom,nq-irq = <&tlmm 17 0x00>;
+			qcom,nq-ven = <&tlmm 16 0x00>;
+			qcom,nq-firm = <&tlmm 62 0x00>;
+			qcom,nq-clkreq = <&pm8953_gpios 2 0x00>;
+			qcom,nq-esepwr = <&tlmm 141 0x00>;
+			interrupt-parent = <&tlmm>;
+			qcom,clk-src = "BBCLK2";
+			interrupts = <17 0>;
+			interrupt-names = "nfc_irq";
+			pinctrl-names = "nfc_active", "nfc_suspend";
+			pinctrl-0 = <&nfc_int_active &nfc_disable_active>;
+			pinctrl-1 = <&nfc_int_suspend &nfc_disable_suspend>;
+			clocks = <&clock_gcc clk_bb_clk2_pin>;
+			clock-names = "ref_clk";
+		};
 	};
 
 	qcom,wdt@b017000 {
-		qcom,bark-time = <20000>;
-		qcom,pet-time = <15000>;
+		qcom,bark-time = <11000>;
+		qcom,pet-time = <10000>;
 	};
-
-	/delete-node/ qseecom@85b00000;
 
 	qcom_seecom: qseecom@84a00000 {
 		compatible = "qcom,qseecom";
-		reg = <0x84a00000 0x190000>;
+		reg = <0x84a00000 0x1900000>;
 		reg-names = "secapp-region";
 		qcom,hlos-num-ce-hw-instances = <1>;
 		qcom,hlos-ce-hw-instance = <0>;
@@ -122,4 +277,97 @@
 				"iface_clk", "bus_clk";
 		qcom,ce-opp-freq = <100000000>;
 	};
+
+	/delete-node/ qseecom@85b00000;
+
+	usb3: ssusb@7000000{
+		qcom,detect-dpdm-floating;
+	};
+
+	qusb_phy: qusb@79000 {
+		qcom,qusb-phy-init-seq = <0xF8 0x80
+					0x23 0x84
+					0x83 0x88
+					0xC0 0x8C
+					0x14 0x9C
+					0x30 0x08
+					0x79 0x0C
+					0x21 0x10
+					0x00 0x90
+					0x9F 0x1C
+					0x00 0x18>;
+
+	};
+
+	tp1v8_vreg: tp1v8_vreg {
+		compatible = "regulator-fixed";
+		regulator-name = "tp1v8_vreg";
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+		gpio = <&tlmm 61 0>;
+		startup-delay-us = <5000>;
+		enable-active-high;
+	};
+
+	tp2v8_vreg: tp2v8_vreg {
+		compatible = "regulator-fixed";
+		regulator-name = "tp2v8_vreg";
+		regulator-min-microvolt = <2800000>;
+		regulator-max-microvolt = <2800000>;
+		gpio = <&tlmm  128 0>;
+		startup-delay-us = <5000>;
+		enable-active-high;
+	};
+
+	fingerprint_goodix {
+		compatible = "goodix,fingerprint";
+		interrupt-parent = <&tlmm>;
+		interrupts = <48 0x0>;
+		fp-gpio-irq = <&tlmm 48 0x1>;
+		fp-gpio-reset = <&tlmm 50 0x0>;
+		status = "okay";
+	};
+
+	fingerprint_fpc {
+		status = "okay";
+		compatible = "fpc,fpc1020";
+		interrupt-parent = <&tlmm>;
+		interrupts = <48 0x0>;
+		fpc,gpio_rst = <&tlmm 50 0x0>;
+		fpc,gpio_irq = <&tlmm 48 0x0>;
+		vdd_ana-supply  = <&fp_vdd_vreg>;
+		/* fpc,enable-on-boot; */
+		/* fpc,enable-wakeup; */
+
+		pinctrl-names = "fpc1020_reset_reset",
+				"fpc1020_reset_active",
+				"fpc1020_irq_active";
+
+		pinctrl-0 = <&msm_gpio_50>;
+		pinctrl-1 = <&msm_gpio_50_output_high>;
+		pinctrl-2 = <&msm_gpio_48>;
+	};
+
+	sn_fuse: snfuse@0xA4128 {
+		compatible = "qcom,sn-fuse";
+		reg = <0xA4128 0x4>;
+		reg-names = "sn-base";
+	};
+
+	spk_id_pin: spk-id-pin@9 {
+		compatible = "audio,speaker-id";
+		audio,speaker-id-gpio = <&tlmm 9 0x00>;
+		pinctrl-names = "pull_down", "pull_up", "no_pull";
+		pinctrl-0 = <&spk_id_pull_down>;
+		pinctrl-1 = <&spk_id_pull_up>;
+		pinctrl-2 = <&spk_id_no_pull>;
+	};
+};
+
+&pm8953_mpps {
+	/delete-node/ mpp@a100;
+};
+
+&pm8953_vadc {
+	/delete-node/ chan@11;
 };

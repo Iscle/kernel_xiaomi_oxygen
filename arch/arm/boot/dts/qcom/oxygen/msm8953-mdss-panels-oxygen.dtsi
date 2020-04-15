@@ -10,7 +10,6 @@
  * GNU General Public License for more details.
  */
 
-#include "../msm8953-mdss-panels.dtsi"
 #include "dsi-panel-tianma-r63350-1080p-video.dtsi"
 #include "dsi-panel-auo-r61322-1080p-video.dtsi"
 
