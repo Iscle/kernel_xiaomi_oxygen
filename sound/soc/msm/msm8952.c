@@ -64,6 +64,8 @@ static int msm_btsco_rate = BTSCO_RATE_8KHZ;
 static int msm_btsco_ch = 1;
 static int msm_ter_mi2s_tx_ch = 1;
 static int msm_pri_mi2s_rx_ch = 1;
+static int msm_quin_mi2s_rx_ch = 2;
+static int msm_quin_mi2s_tx_ch = 4;
 static int msm_proxy_rx_ch = 2;
 static int msm_vi_feed_tx_ch = 2;
 static int mi2s_rx_bit_format = SNDRV_PCM_FORMAT_S16_LE;
@@ -363,6 +365,40 @@ static int msm_auxpcm_be_params_fixup(struct snd_soc_pcm_runtime *rtd,
 
 	rate->min = rate->max = msm8952_auxpcm_rate;
 	channels->min = channels->max = 1;
+
+	return 0;
+}
+
+static int msm_quin_mi2s_rx_be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
+				struct snd_pcm_hw_params *params)
+{
+	struct snd_interval *rate = hw_param_interval(params,
+					SNDRV_PCM_HW_PARAM_RATE);
+
+	struct snd_interval *channels = hw_param_interval(params,
+					SNDRV_PCM_HW_PARAM_CHANNELS);
+
+	pr_debug("%s: Num of channels = %d Sample rate = %d\n", __func__,
+			msm_quin_mi2s_rx_ch, mi2s_rx_sample_rate);
+	rate->min = rate->max = mi2s_rx_sample_rate;
+	channels->min = channels->max = msm_quin_mi2s_rx_ch;
+
+	return 0;
+}
+
+static int msm_quin_mi2s_tx_be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
+				struct snd_pcm_hw_params *params)
+{
+	struct snd_interval *rate = hw_param_interval(params,
+					SNDRV_PCM_HW_PARAM_RATE);
+
+	struct snd_interval *channels = hw_param_interval(params,
+					SNDRV_PCM_HW_PARAM_CHANNELS);
+
+	pr_debug("%s: Num of channels = %d Sample rate = %d\n", __func__,
+			msm_quin_mi2s_tx_ch, mi2s_rx_sample_rate);
+	rate->min = rate->max = mi2s_rx_sample_rate;
+	channels->min = channels->max = msm_quin_mi2s_tx_ch;
 
 	return 0;
 }
@@ -2437,6 +2473,36 @@ static struct snd_soc_dai_link msm8952_dai[] = {
 		.ignore_pmdown_time = 1,
 		.be_id = MSM_FRONTEND_DAI_MULTIMEDIA29,
 	},
+	{/* hw:x,43 */
+		.name = "Quin MI2S_RX Hostless",
+		.stream_name = "Quin MI2S_RX Hostless",
+		.cpu_dai_name = "QUIN_MI2S_RX_HOSTLESS",
+		.platform_name	= "msm-pcm-hostless",
+		.dynamic = 1,
+		.dpcm_playback = 1,
+		.trigger = {SND_SOC_DPCM_TRIGGER_POST,
+			SND_SOC_DPCM_TRIGGER_POST},
+		.no_host_mode = SND_SOC_DAI_LINK_NO_HOST,
+		.ignore_suspend = 1,
+		.ignore_pmdown_time = 1,
+		.codec_dai_name = "snd-soc-dummy-dai",
+		.codec_name = "snd-soc-dummy",
+	},
+	{ /* hw:x,44 */
+		.name = "Quin MI2S_TX Hostless",
+		.stream_name = "Quin MI2S_TX Hostless",
+		.cpu_dai_name = "QUIN_MI2S_TX_HOSTLESS",
+		.platform_name	= "msm-pcm-hostless",
+		.dynamic = 1,
+		.dpcm_capture = 1,
+		.trigger = {SND_SOC_DPCM_TRIGGER_POST,
+			SND_SOC_DPCM_TRIGGER_POST},
+		.no_host_mode = SND_SOC_DAI_LINK_NO_HOST,
+		.ignore_suspend = 1,
+		.ignore_pmdown_time = 1,
+		.codec_dai_name = "snd-soc-dummy-dai",
+		.codec_name = "snd-soc-dummy",
+	},
 	/* Backend I2S DAI Links */
 	{
 		.name = LPASS_BE_PRI_MI2S_RX,
@@ -2695,7 +2761,7 @@ static struct snd_soc_dai_link msm8952_dai[] = {
 		.no_pcm = 1,
 		.dpcm_capture = 1,
 		.be_id = MSM_BACKEND_DAI_QUINARY_MI2S_TX,
-		.be_hw_params_fixup = msm_be_hw_params_fixup,
+		.be_hw_params_fixup = msm_quin_mi2s_tx_be_hw_params_fixup,
 		.ops = &msm8952_quin_mi2s_be_ops,
 		.ignore_suspend = 1,
 	},
@@ -2729,7 +2795,7 @@ static struct snd_soc_dai_link msm8952_quin_dai_link[] = {
 		.no_pcm = 1,
 		.dpcm_playback = 1,
 		.be_id = MSM_BACKEND_DAI_QUINARY_MI2S_RX,
-		.be_hw_params_fixup = msm_mi2s_rx_be_hw_params_fixup,
+		.be_hw_params_fixup = msm_quin_mi2s_rx_be_hw_params_fixup,
 		.ops = &msm8952_quin_mi2s_be_ops,
 		.ignore_pmdown_time = 1, /* dai link has playback support */
 		.ignore_suspend = 1,
